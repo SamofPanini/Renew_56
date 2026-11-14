@@ -1,0 +1,15 @@
+regime,basis,n_listed,write_in,categories,evidence_grade,notion_id
+Glottolog,语言,,不适用,cmn;cjy;hsn;gan;czh;wuu;yue;nan;hak;cnp;csp（文献标注映射，非分类树）,E,418ad0c2efeb8101b055cb50209ffbe9
+ISO 639-3,语言,,不适用,cdo;cjy;cmn;cpx;czh;czo;gan;hak;hsn;mnp;nan;wuu;yue;csp;cnp,E,418ad0c2efeb81868029e9c384f02a77
+中国大陆法定,行政登记,1,自填或多选规则：未核,汉族,E,418ad0c2efeb810fab76def2cd57e4e5
+加拿大,祖源,,可多报，每人最多保留6个（S05）,Chinese;Taiwanese;Hong Konger（示例）,B,418ad0c2efeb81c7b609cf22e868b46f
+台湾,混合,1,定义含“自我认同”，多选或自填规则未核,客家（客语腔调另明列四县、海陆、大埔、饶平、诏安5种，属语言项，不计人群类别）,A,418ad0c2efeb81e6bb13cc57a0565c41
+新加坡,混合,,词汇表以 etc. 收尾，Other Chinese 为统计表列，是否可自填未核,Hokkien;Teochew;Cantonese;Hakka;Hainanese;Foochow;Henghua;Shanghainese;Hockchia,A,418ad0c2efeb81dea62dfe2dc87ec86d
+澳大利亚,自报,,未核,未核,E,418ad0c2efeb81eba030e9b06f135b15
+缅甸,行政登记,1,自填或多选：未核,Kokang；名录外：Burmese Chinese;Panthay,D,418ad0c2efeb81729233da244eba2d86
+美国,自报,1,可多选；Another group 可自填（填写方式未核）,Chinese,A,418ad0c2efeb81988f19f34382c93ccf
+苏联后苏联,行政登记,2,未核,Dungan;Chinese,E,418ad0c2efeb8174a826c63411d6883e
+英国,自报,,单选，含自填项（Other Asian 等）,Bangladeshi;Chinese;Indian;Pakistani;Other Asian（Asian 下5项，共19个勾选项）,A,418ad0c2efeb81f7a596da57301c2c32
+英属马来亚,自报,,住户自报（二手，D）,二手文献列 Hakka;Cantonese;Teochew;Foochow;Hainanese;Kwongsai 等，年份不明,E,418ad0c2efeb81ef9cc5f2b97d4056b0
+语言地图集,语言,10,不适用（语言学分区，不涉及人群自报）,官话;晋语;吴语;徽语;赣语;湘语;闽语;粤语;平话;客家话,E,418ad0c2efeb814a80def9ef0be19ef4
+越南,行政登记,3,不适用（名录内的民族成份，不设自填）,Hoa;Ngái;Sán Dìu,A,418ad0c2efeb81a68906d24d686848e4

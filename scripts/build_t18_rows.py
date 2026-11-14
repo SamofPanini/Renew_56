@@ -129,6 +129,8 @@ for L in legal:
             note += f"。表中 countries 含 TW 的南岛语语言级条目共 {n_tw} 条（来源编码为 CN;TW，仅计数）"
         if how:
             note += ("。" if note else "") + "名称对齐：" + "；".join(how)
+        if "taji1245" in hits:  # T18 抽检裁决⑩：同名异指，不作合并/分列证据
+            note = "同名异指：taji1245 是波斯语塔吉克语，国内塔吉克语指色勒库尔、瓦罕，不作为‘国内合并而 Glottolog 分列’的证据"
         urls = ([neac_url(c)] if r["neac"] else []) + ([nmlr_url(c)] if r["nmlr"] else [])
         out.append(dict(row_id=f"X-{c}-{seq:02d}", legal_code=c, variety_label=r["label"],
                         glottocodes=";".join(hits), consistency=cons, intelligibility_note=r["intel"],
