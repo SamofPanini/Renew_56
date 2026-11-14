@@ -8,7 +8,7 @@
 
 对齐只用三种依据（align_basis）：
   name   国内名称与 glottolog_cn.csv 的 names_cjk 或 name 列直接一致
-         （仅做繁体转简体的字形归一；需要 opencc-python-reimplemented，缺失时只做原样比对）
+         （仅做繁体转简体的字形归一；必须安装 opencc-python-reimplemented，缺失时直接报错退出）
   label  条目的 legal_code_from_label 等于本类代码
   alias  经 data/aliases/legal_language_alias.csv 补上的对应（T21；别名表每行有来源，
          note 以“【不采用”开头的行表示同名异指等，按名称对到的该条目反而要剔除）
@@ -24,9 +24,10 @@ import t18_domestic_spec as spec
 
 try:
     from opencc import OpenCC
-    t2s = OpenCC("t2s").convert
-except Exception:  # 没装 opencc 时退化为原样比对
-    t2s = lambda s: s
+except ImportError:
+    sys.exit("缺少依赖 opencc-python-reimplemented：请先运行 pip install -r requirements.txt。"
+             "（缺包时按原样比对会让二十多行静默变成“未对应”，故直接退出。）")
+t2s = OpenCC("t2s").convert
 
 PILOT = {"04", "07", "08", "09", "16", "18", "20", "24", "54", "55", "56"}
 PSEUDO = {"Bookkeeping", "Unclassifiable", "Unattested", "Sign Language", "Mixed Language", "Pidgin",

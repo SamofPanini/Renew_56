@@ -24,15 +24,21 @@
 | `scripts/build_t19_counts.py` | 输出口径类别数与事件按年代×触发因素的计数表（`outputs/partitions_counts.csv`、`outputs/events_counts.csv`） | |
 | `scripts/build_indicators.py` | 计算错位指标（同时读标注派生映射与人工映射） | |
 | `outputs/indicators.csv` | 每个法定类别的指标 | 由脚本生成 |
+| `data/raw/census2020_migration_5yr.csv` 等 | T20：2020 普查年鉴长表 7-7 省际五年迁移（原图转录）、普查公报第三号、省会坐标；来源与抓取记录见 `data/raw/SOURCES.md` | 国家统计局、GeoNames |
+| `data/partitions/province_dialect.csv`、`province_adjacency.csv`、`province_econ_region.csv` | T20：各省主导方言区（附来源原句）、陆地相邻、四大区域 | 中文维基“汉语方言”；后两者手工编码 |
+| `scripts/t20_gravity.py` | T20 PPML 引力模型（M0–M5 与两项稳健性），输出 `outputs/t20_results.csv` | 计划 `docs/t20_plan.md`，报告 `docs/t20_report.md` |
 
 ## 重算
+
+先安装依赖：`pip install -r requirements.txt`（pandas、statsmodels——T20 引力模型要用；opencc-python-reimplemented——`build_t18_rows.py` 繁转简要用，缺包时该脚本直接报错退出，不再静默退化）。
 
 ```
 git clone --depth 1 --filter=blob:none --sparse https://github.com/glottolog/glottolog-cldf
 git -C glottolog-cldf sparse-checkout set cldf
 python3 scripts/build_glottolog_cn.py glottolog-cldf/cldf
-python3 scripts/build_t18_rows.py        # 需要 pip install opencc-python-reimplemented（繁转简）
+python3 scripts/build_t18_rows.py        # 需要 opencc-python-reimplemented（缺包即报错）
 python3 scripts/build_indicators.py
+python3 scripts/t20_gravity.py           # 需要 statsmodels
 ```
 
 当前数据取自 glottolog-cldf 标签 v5.4（提交 84977fc，2026-11-10）。
