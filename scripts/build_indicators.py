@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""计算错位指标（描述性）。用法: python3 scripts/build_indicators.py"""
+"""计算错位指标（描述性）。用法: python3 scripts/build_indicators.py
+
+同时读两张映射表：
+  data/mapping_label_derived.csv   标注派生映射（脚本生成）
+  data/mapping_legal_language.csv  人工映射（试点 11 类 + T18 的 45 类）
+前 10 列（label_* 与 pilot_*）沿用 T17 的定义不变；其后各列为 T18 新增。
+"""
 import csv, collections
 from pathlib import Path
 
@@ -8,21 +14,48 @@ rd = lambda p: list(csv.DictReader(open(ROOT / p, encoding="utf-8")))
 legal = rd("data/legal_categories.csv")
 glot = {r["glottocode"]: r for r in rd("data/glottolog_cn.csv")}
 derived = rd("data/mapping_label_derived.csv")
-pilot = rd("data/mapping_legal_language.csv")
+manual = rd("data/mapping_legal_language.csv")
+name_of = {L["code"]: L["name_zh"] for L in legal}
 
 PSEUDO = {"Bookkeeping", "Unclassifiable", "Unattested", "Sign Language", "Mixed Language", "Pidgin", "Speech Register", "Artificial Language", "(isolate/unclassified)"}
 by = collections.defaultdict(list)
 for d in derived:
     by[d["legal_code"]].append(d)
 
-pilot_codes = collections.defaultdict(set)
+is_lang = lambda g: g in glot and glot[g]["level"] == "language" and glot[g]["family"] not in PSEUDO
+
+manual_codes = collections.defaultdict(set)      # 人工表里出现的全部 Glottocode
+by_name = collections.defaultdict(set)           # align_basis = name
+by_label_row = collections.defaultdict(set)      # align_basis = label
+unbased = collections.defaultdict(set)           # 试点行（无 align_basis）
+domestic_rows = collections.Counter()            # 国内口径变体数 = 有国内依据的行数
+unaligned_rows = collections.Counter()
 bad = []
-for r in pilot:
+for r in manual:
+    shared_row = r["row_id"].startswith("XS-")
+    gcs = [g for g in r["glottocodes"].split(";") if g]
+    basis = (r.get("align_basis") or "").strip()
     for lc in r["legal_code"].split(";"):
-        for g in filter(None, r["glottocodes"].split(";")):
-            pilot_codes[lc].add(g)
+        for g in gcs:
+            manual_codes[lc].add(g)
+            {"name": by_name, "label": by_label_row}.get(basis, unbased)[lc].add(g)
             if g not in glot:
                 bad.append((r["row_id"], g))
+        if shared_row or basis == "label" or "系属措辞" in r["variety_label"]:
+            continue
+        domestic_rows[lc] += 1
+        if not gcs:
+            unaligned_rows[lc] += 1
+
+# 每类的“已对齐条目”= 人工表条目 ∪ 标注派生条目（限表内、语言级、非伪语系）
+aligned = {}
+for L in legal:
+    c = L["code"]
+    aligned[c] = {g for g in manual_codes[c] | {d["glottocode"] for d in by.get(c, [])} if is_lang(g)}
+owners = collections.defaultdict(set)
+for c, gs in aligned.items():
+    for g in gs:
+        owners[g].add(c)
 
 out = []
 for L in legal:
@@ -32,13 +65,30 @@ for L in legal:
     pseudo_n = sum(1 for d in ds if d["family"] in PSEUDO)
     fams = sorted({d["family"] for d in langs_only})
     brs = sorted({(d["family"], d["branch_l2"]) for d in langs_only})
+    al = aligned[c]
+    al_fams = sorted({glot[g]["family"] for g in al})
+    name_fams = sorted({glot[g]["family"] for g in by_name[c] | unbased[c] if is_lang(g)})
+    shared = collections.defaultdict(list)
+    for g in sorted(al):
+        for o in sorted(owners[g] - {c}):
+            shared[o].append(g)
     out.append({
         "legal_code": c, "name_zh": L["name_zh"],
         "label_entries": len(ds), "label_languages": len(langs_only),
         "label_families": len(fams), "label_family_names": "；".join(fams),
         "label_branches_l2": len(brs), "label_pseudo_entries": pseudo_n,
-        "pilot_glottocodes": len(pilot_codes.get(c, ())),
-        "pilot_not_in_label": "；".join(sorted(pilot_codes.get(c, set()) - {d["glottocode"] for d in ds})),
+        "pilot_glottocodes": len(manual_codes.get(c, ())),
+        "pilot_not_in_label": "；".join(sorted(manual_codes.get(c, set()) - {d["glottocode"] for d in ds})),
+        # —— T18 新增 ——
+        "domestic_varieties": domestic_rows[c],
+        "domestic_unaligned": unaligned_rows[c],
+        "aligned_languages": len(al),
+        "aligned_by_name": sum(1 for g in al if g in by_name[c] or g in unbased[c]),
+        "aligned_by_label_only": sum(1 for g in al if g not in by_name[c] and g not in unbased[c]),
+        "aligned_families": len(al_fams), "aligned_family_names": "；".join(al_fams),
+        "name_aligned_families": len(name_fams), "name_aligned_family_names": "；".join(name_fams),
+        "shared_with": "；".join(f"{o}{name_of[o]}（{'、'.join(gs)}）" for o, gs in sorted(shared.items())),
+        "codes_not_in_table": "；".join(sorted(g for g in manual_codes[c] if g not in glot)),
     })
 (ROOT / "outputs").mkdir(exist_ok=True)
 with open(ROOT / "outputs" / "indicators.csv", "w", encoding="utf-8", newline="") as f:
@@ -48,9 +98,17 @@ lab = [o for o in out if o["label_entries"]]
 print("有标注的法定类别:", len(lab), "/ 56")
 print("其中含 2 个以上语言级条目:", sum(o["label_languages"] >= 2 for o in lab))
 print("其中跨 2 个以上语系:", sum(o["label_families"] >= 2 for o in lab), [o["name_zh"] for o in lab if o["label_families"] >= 2])
-print("试点表中不在中国条目表里的 Glottocode:", bad)
-for o in lab:
-    if o["label_families"] >= 2:
-        for d in by[o["legal_code"]]:
-            if d["family"] not in PSEUDO:
-                print("  ", o["name_zh"], d["family"], d["glottocode"], d["name"])
+print("人工表中不在中国条目表里的 Glottocode:", bad)
+print("—— 人工映射 ∪ 标注（56 类）——")
+print("国内口径行数 ≥2 的类:", sum(o["domestic_varieties"] >= 2 for o in out))
+print("已对齐语言级条目 ≥2 的类:", sum(o["aligned_languages"] >= 2 for o in out))
+print("已对齐条目为 0 的类:", [o["name_zh"] for o in out if o["aligned_languages"] == 0])
+x = [o for o in out if o["aligned_families"] >= 2]
+print("已对齐条目跨 2 个以上语系:", len(x))
+for o in x:
+    print("  ", o["legal_code"], o["name_zh"], o["aligned_family_names"], "｜仅按名称:", o["name_aligned_family_names"] or "—")
+pairs = sorted({tuple(sorted((c, o))) for c, gs in aligned.items() for g in gs for o in owners[g] - {c}})
+print("共用条目的类别对:", len(pairs))
+for a, b in pairs:
+    print("  ", a + name_of[a], "—", b + name_of[b], "：", "、".join(sorted(aligned[a] & aligned[b])))
+print("align_basis 取值:", dict(collections.Counter((r.get("align_basis") or "（试点行，空）") for r in manual)))

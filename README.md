@@ -14,10 +14,12 @@
 | `data/legal_categories.csv` | 56 个法定类别、国标两位代码、罗马字母拼写、标注别名 | 项目存档附表（GB/T 3304 拼写未逐项对照国标原件） |
 | `data/glottolog_cn.csv` | Glottolog 中国家字段含 CN 的全部条目：分类路径、坐标、濒危等级、民族标注、汉字名称 | glottolog-cldf，由脚本生成 |
 | `data/mapping_label_derived.csv` | 法定类别 × Glottolog 条目，依据是 Glottolog 濒危注释中所引 Ethnologue 的“recognized nationality”标注 | 由脚本生成 |
-| `data/mapping_legal_language.csv` | 试点（T13）人工映射：11 个法定类别 × 语言变体，含国内口径与 Glottolog 口径是否一致 | Notion“论断与关系边”库的 X- 行精简版 |
+| `data/mapping_legal_language.csv` | 人工映射，56 个法定类别 × 语言变体：试点 11 类（T13）加 T18 的 45 类。含国内口径与 Glottolog 口径是否一致、对齐依据、国内页面地址 | 试点行来自 Notion 的 X- 行；T18 行由 `scripts/build_t18_rows.py` 生成 |
 | `data/partitions/` | 预留：不同制度与学术口径下的分类表（T14 产出） | 待填 |
 | `scripts/build_glottolog_cn.py` | 生成上面两张脚本表 | |
-| `scripts/build_indicators.py` | 计算错位指标 | |
+| `scripts/t18_domestic_spec.py` | T18 国内口径规格表：45 类逐行的名称、两类官方页面的原文片段、互通性说法 | 人工摘录，读取日期 2026-11-14 |
+| `scripts/build_t18_rows.py` | 按规格表与中国条目表生成 45 类的映射行 | |
+| `scripts/build_indicators.py` | 计算错位指标（同时读标注派生映射与人工映射） | |
 | `outputs/indicators.csv` | 每个法定类别的指标 | 由脚本生成 |
 
 ## 重算
@@ -26,6 +28,7 @@
 git clone --depth 1 --filter=blob:none --sparse https://github.com/glottolog/glottolog-cldf
 git -C glottolog-cldf sparse-checkout set cldf
 python3 scripts/build_glottolog_cn.py glottolog-cldf/cldf
+python3 scripts/build_t18_rows.py        # 需要 pip install opencc-python-reimplemented（繁转简）
 python3 scripts/build_indicators.py
 ```
 
@@ -35,10 +38,30 @@ python3 scripts/build_indicators.py
 
 1. **民族标注覆盖不全**。473 条条目中只有 141 条带可对应到 56 类的标注，覆盖 23 个法定类别；其余 33 类没有标注，不代表它们没有对应语言。
 2. **标注是转引**。它是 Glottolog 濒危注释里引用的 Ethnologue 说法，不是 Glottolog 自己的判断，也不是中国官方口径。项目内证据等级暂记 D，待抽检裁定。
-3. **标注可能有错**。例如 Chadong（chad1240，侗台语）在原数据中标为 “Hani”，需人工核对，指标中由此出现的“哈尼族跨语系”不可直接采信。
+3. **标注可能有错**。例如 Chadong（chad1240，侗台语，表内坐标在广西桂林一带）在原数据中标为 “Hani”，指标中由此出现的“哈尼族跨语系”不可直接采信。T18 用 1 次检索核对（2026-11-14）：检索摘录称茶洞语通行于广西桂林临桂茶洞一带，说话人在官方分类中归汉族（英文维基百科条目的说法，原页未打开，也未见中国官方来源，证据等级 E）；没有任何摘录把它与哈尼族联系起来。“Hani” 是否为 “Han” 的笔误属推测，未证实；本仓库不改动原标注，只在此注明。
 4. **国家字段沿用 Glottolog 的编码**。台湾的南岛语条目在 Glottolog 中标为 `CN;TW`，因此出现在本表中；这只是数据来源的编码方式。
 5. **伪语系不计入跨语系**。Bookkeeping、Sign Language、Pidgin 等不参与语系计数。
-6. **试点映射全部为 E 级**，细节与来源见 Notion 对应行；`nort3249`、`sout3221` 是 Glottolog 的簿记条目，不在中国条目表内。
+6. **试点映射（11 类）全部为 E 级**，细节与来源见 Notion 对应行；`nort3249`、`sout3221` 是 Glottolog 的簿记条目，不在中国条目表内。
+
+## 人工映射的列与规则（T18）
+
+`mapping_legal_language.csv` 的列：`row_id`（X-代码-序号；跨类共用行为 XS-序号）、`legal_code`、`variety_label`、`glottocodes`、`consistency`、`intelligibility_note`、`evidence_grade`，以及 T18 新增的 `domestic_source_url`、`align_basis`、`note`（试点行这三列留空）。
+
+- **国内口径**每类读两页：国家民委该族“概况”页（neac.gov.cn）与国家语言资源监测与研究民族语言中心该族页面（nmlr.muc.edu.cn）。两页说法不一致时并存，不调和。汉族没有 nmlr 页；柯尔克孜族、达斡尔族的 neac 概况页正文没有写语言。
+- **对齐依据**只有三种：`name`（国内名称与条目表的 `names_cjk` 或 `name` 直接一致，只做繁体转简体的字形归一）、`label`（条目的 `legal_code_from_label` 等于本类代码）、`none`（未对应）。不按拼写相近、地理相邻或谱系相近对齐。
+- **按名称对齐是字面对齐，不是语言学判定**。例如“塔吉克语”按名称对到 Glottolog 的 Tajik（taji1245），而国内页面说的两种方言是色勒库尔语与瓦罕语；“蒙古语”“苗语”“白语”“侗语”等在表内没有同名条目，因此标为未对应，并不表示 Glottolog 没有相应条目。未对应的多少首先反映两套名称体系的差别。
+- **“汉语”不对齐**。回族、满族、锡伯族、瑶族、裕固族等行里的“汉语”在表内没有同名条目，标为未对应；汉族一行只记表内汉语支语言级条目数（29），不逐条对齐。
+- **证据等级**：页面已打开并读到原句的行记 B（原文片段写在规格表里，可用 `build_t18_rows.py --pages` 对已下载的页面核对）；仅据标注的行记 D。
+- **高山族**只记国内页面的表述与表内 `countries` 含 TW 的南岛语语言级条目数（22），不逐条对齐。
+
+## 56 类指标（人工映射 ∪ 标注，T18）
+
+`outputs/indicators.csv` 在原有 10 列之后新增：`domestic_varieties`（有国内依据的行数）、`domestic_unaligned`、`aligned_languages`（已对齐的表内语言级条目数，不计伪语系）、`aligned_by_name`、`aligned_by_label_only`、`aligned_families` 与名称、`name_aligned_families` 与名称（只看按名称或试点人工对齐的条目）、`shared_with`、`codes_not_in_table`。
+
+- 国内口径行数 2 行以上：21 类；已对齐语言级条目 2 个以上：23 类；已对齐条目为 0：7 类（高山、土、普米、乌孜别克、德昂、京、基诺）。
+- 已对齐条目跨 2 个以上语系：5 类。回族（回辉话属南岛语、康家语属蒙古语族）、裕固族（西部裕固语属突厥语、东部裕固语属蒙古语族）两类有国内页面依据；汉族、苗族、哈尼族三类只来自标注，其中哈尼族一例存疑（限制 3）。
+- 共用条目的类别对：3 对。怒族—独龙族（独龙语，国内页面明述）；维吾尔族—塔塔尔族、哈萨克族—塔塔尔族（国家民委称维吾尔语、哈萨克语已成为塔塔尔族通用的语言文字）。另有两处国内页面明述、但表内没有同名条目的共用：壮族—布依族（XS-01）、藏族—普米族（XS-02）。
+- 国内页面按语族或语支写明内部跨类、但按名称对不上的，指标里看不出来，须读 `note`：瑶族（瑶语支、苗语支、侗水语支、汉语方言四个支系）、景颇族（景颇语支与缅语支）、畲族（两页对“畲语”所指不一）、怒族（三种“怒语”互不能通话）。
 
 ## 首轮指标（仅基于标注派生映射）
 
