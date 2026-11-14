@@ -1,6 +1,7 @@
 """T20 “划分的收益”建模试点：方言区对省际迁移的解释力（V-08）。
 
 一条命令重算：  python scripts/t20_gravity.py
+依赖：pandas、numpy、statsmodels（pip install -r requirements.txt）
 输入：
   data/raw/census2020_migration_5yr.csv   长表 7-7 转录（行=现住地，列=五年前常住地）
   data/raw/capital_coords.csv             省会坐标（GeoNames）

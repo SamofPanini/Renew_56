@@ -26,7 +26,7 @@ province,dialect_group,mandarin_subgroup,mixed,source,note
 云南,官话,西南官话,否,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,西南官话：“通行于湖北省大部分地区（东南部、东部除外）、云南、贵州、四川、重庆、陕西南部等汉族地区”
 西藏,,,是,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,来源无西藏的汉语方言归属，按规则留空
 陕西,官话,西北官话,是,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,西北官话：“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区。新疆汉族使用的语言也属西北官话”；西南官话：“通行于湖北省大部分地区（东南部、东部除外）、云南、贵州、四川、重庆、陕西南部等汉族地区”；晋语：“在山西大部以及陕西北部、河北西部及南部、河南北部、内蒙古中西部使用”
-甘肃,官话,西北官话,否,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,西北官话：“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区。新疆汉族使用的语言也属西北官话”
-青海,官话,西北官话,否,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,西北官话：“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区。新疆汉族使用的语言也属西北官话”
-宁夏,官话,西北官话,否,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,西北官话：“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区。新疆汉族使用的语言也属西北官话”
+甘肃,,,是,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,来源仅写西北官话“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区”，未指出该省主导方言区，按规则留空（与内蒙古同一规则；T11 抽检后改，原填官话/西北官话/mixed=否）
+青海,,,是,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,来源仅写西北官话“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区”，未指出该省主导方言区，按规则留空（与内蒙古同一规则；T11 抽检后改，原填官话/西北官话/mixed=否）
+宁夏,,,是,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,来源仅写西北官话“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区”，未指出该省主导方言区，按规则留空（与内蒙古同一规则；T11 抽检后改，原填官话/西北官话/mixed=否）
 新疆,官话,西北官话,否,https://zh.wikipedia.org/w/index.php?title=%E6%B1%89%E8%AF%AD%E6%96%B9%E8%A8%80&oldid=95058314,西北官话：“行于山西、陕西大部、甘肃、青海、宁夏、新疆、内蒙古等省的一部分地区。新疆汉族使用的语言也属西北官话”

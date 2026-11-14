@@ -30,12 +30,15 @@
 
 ## 重算
 
+先安装依赖：`pip install -r requirements.txt`（pandas、statsmodels——T20 引力模型要用；opencc-python-reimplemented——`build_t18_rows.py` 繁转简要用，缺包时该脚本直接报错退出，不再静默退化）。
+
 ```
 git clone --depth 1 --filter=blob:none --sparse https://github.com/glottolog/glottolog-cldf
 git -C glottolog-cldf sparse-checkout set cldf
 python3 scripts/build_glottolog_cn.py glottolog-cldf/cldf
-python3 scripts/build_t18_rows.py        # 需要 pip install opencc-python-reimplemented（繁转简）
+python3 scripts/build_t18_rows.py        # 需要 opencc-python-reimplemented（缺包即报错）
 python3 scripts/build_indicators.py
+python3 scripts/t20_gravity.py           # 需要 statsmodels
 ```
 
 当前数据取自 glottolog-cldf 标签 v5.4（提交 84977fc，2026-11-10）。
