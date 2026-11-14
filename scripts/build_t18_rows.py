@@ -99,6 +99,8 @@ for L in legal:
                         tag += f"，表内写作{orig}"
                     if G[gc]["level"] != "language":
                         tag += f"，{G[gc]['level']}级"
+                    if G[gc]["family"] in PSEUDO:
+                        tag += f"，{G[gc]['family']}"
                     if lab == c:
                         tag += "，同带本类标注"
                     elif lab:
@@ -113,7 +115,8 @@ for L in legal:
         elif n_lang == 1 and len(hits) == 1:
             cons, basis = "一致（按名称对到1条）", "name"
         elif n_lang == 0:
-            cons, basis = "按名称对到非语言级节点", "name"
+            kinds = {"簿记等伪语系条目" if G[g]["family"] in PSEUDO else G[g]["level"] + "级节点" for g in hits}
+            cons, basis = "按名称只对到" + "、".join(sorted(kinds)) + "（不计入语言级条目）", "name"
         else:
             cons, basis = f"国内合并而Glottolog分列（按名称对到{len(hits)}条）", "name"
         note = r["note"]
