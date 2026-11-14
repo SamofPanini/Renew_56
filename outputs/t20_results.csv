@@ -1,0 +1,12 @@
+sample,model,n_pairs,n_provinces,regressors,key_var,coef,robust_se,z,logdist_coef,deviance,m0_deviance,deviance_reduction_pct,loo_oos_deviance,m0_loo_oos_deviance,loo_oos_reduction_pct,adjacent_coef_in_M5,same_econ_coef_in_M5
+全样本,M0,930,31,logdist,,,,,-1.09627,1.87175e+06,1.87175e+06,0,2.23027e+06,2.23027e+06,0,,
+全样本,M1,930,31,logdist+adjacent,adjacent,0.228361,0.133269,1.71354,-0.955134,1.85231e+06,1.87175e+06,1.03849,2.23395e+06,2.23027e+06,-0.165257,,
+全样本,M2,930,31,logdist+same_econ,same_econ,-0.720977,0.0706556,-10.2041,-1.30705,1.52764e+06,1.87175e+06,18.3843,1.85997e+06,2.23027e+06,16.6033,,
+全样本,M3,930,31,logdist+same_dialect,same_dialect,-0.496776,0.144513,-3.4376,-1.18913,1.79701e+06,1.87175e+06,3.99311,2.18822e+06,2.23027e+06,1.8853,,
+全样本,M4,930,31,logdist+same_mandarin_status,same_mandarin_status,-0.286427,0.103419,-2.76958,-1.15129,1.82969e+06,1.87175e+06,2.24719,2.22141e+06,2.23027e+06,0.397348,,
+全样本,M5,930,31,logdist+adjacent+same_econ+same_dialect,same_dialect,-0.481283,0.118259,-4.06974,-1.10937,1.40192e+06,1.87175e+06,25.1014,1.7565e+06,2.23027e+06,21.2429,0.485542,-0.747693
+去掉mixed=是的省份,M0,240,16,logdist,,,,,-0.814843,436906,436906,0,622801,622801,0,,
+去掉mixed=是的省份,M3,240,16,logdist+same_dialect,same_dialect,-0.76198,0.158897,-4.79544,-1.01343,402508,436906,7.87313,556134,622801,10.7043,,
+去掉mixed=是的省份,M5,240,16,logdist+adjacent+same_econ+same_dialect,same_dialect,-0.953049,0.149868,-6.35925,-1.63007,362513,436906,17.0273,582843,622801,6.4158,-0.372733,-0.756538
+去掉迁入地京沪粤,M0,840,31,logdist,,,,,-0.961705,1.34612e+06,1.34612e+06,0,1.60086e+06,1.60086e+06,0,,
+去掉迁入地京沪粤,M5,840,31,logdist+adjacent+same_econ+same_dialect,same_dialect,-0.551042,0.133546,-4.12623,-1.1065,1.02336e+06,1.34612e+06,23.9769,1.27797e+06,1.60086e+06,20.1698,0.324964,-0.681272

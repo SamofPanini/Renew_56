@@ -23,6 +23,9 @@
 | `scripts/build_t19_counts.py` | 输出口径类别数与事件按年代×触发因素的计数表（`outputs/partitions_counts.csv`、`outputs/events_counts.csv`） | |
 | `scripts/build_indicators.py` | 计算错位指标（同时读标注派生映射与人工映射） | |
 | `outputs/indicators.csv` | 每个法定类别的指标 | 由脚本生成 |
+| `data/raw/census2020_migration_5yr.csv` 等 | T20：2020 普查年鉴长表 7-7 省际五年迁移（原图转录）、普查公报第三号、省会坐标；来源与抓取记录见 `data/raw/SOURCES.md` | 国家统计局、GeoNames |
+| `data/partitions/province_dialect.csv`、`province_adjacency.csv`、`province_econ_region.csv` | T20：各省主导方言区（附来源原句）、陆地相邻、四大区域 | 中文维基“汉语方言”；后两者手工编码 |
+| `scripts/t20_gravity.py` | T20 PPML 引力模型（M0–M5 与两项稳健性），输出 `outputs/t20_results.csv` | 计划 `docs/t20_plan.md`，报告 `docs/t20_report.md` |
 
 ## 重算
 
