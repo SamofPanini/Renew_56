@@ -15,10 +15,12 @@
 | `data/glottolog_cn.csv` | Glottolog 中国家字段含 CN 的全部条目：分类路径、坐标、濒危等级、民族标注、汉字名称 | glottolog-cldf，由脚本生成 |
 | `data/mapping_label_derived.csv` | 法定类别 × Glottolog 条目，依据是 Glottolog 濒危注释中所引 Ethnologue 的“recognized nationality”标注 | 由脚本生成 |
 | `data/mapping_legal_language.csv` | 人工映射，56 个法定类别 × 语言变体：试点 11 类（T13）加 T18 的 45 类。含国内口径与 Glottolog 口径是否一致、对齐依据、国内页面地址 | 试点行来自 Notion 的 X- 行；T18 行由 `scripts/build_t18_rows.py` 生成 |
-| `data/partitions/` | 预留：不同制度与学术口径下的分类表（T14 产出） | 待填 |
+| `data/partitions/han_partitions.csv` | 汉语方言人群在不同制度与学术口径下的分类表（14 行；`n_listed` 解析不出的留空） | Notion 论断库 HX- 行（T14，复检通过），T19 导出 |
+| `data/events/gaitu_guiliu.csv`、`data/events/context_series.csv` | 改土归流事件表（20 行）与背景序列（5 行）；`trigger` 只记来源明说的触发因素 | Notion 论断库 G- 行（T16，抽检通过），T19 导出 |
 | `scripts/build_glottolog_cn.py` | 生成上面两张脚本表 | |
 | `scripts/t18_domestic_spec.py` | T18 国内口径规格表：45 类逐行的名称、两类官方页面的原文片段、互通性说法 | 人工摘录，读取日期 2026-11-14 |
 | `scripts/build_t18_rows.py` | 按规格表与中国条目表生成 45 类的映射行 | |
+| `scripts/build_t19_counts.py` | 输出口径类别数与事件按年代×触发因素的计数表（`outputs/partitions_counts.csv`、`outputs/events_counts.csv`） | |
 | `scripts/build_indicators.py` | 计算错位指标（同时读标注派生映射与人工映射） | |
 | `outputs/indicators.csv` | 每个法定类别的指标 | 由脚本生成 |
 
