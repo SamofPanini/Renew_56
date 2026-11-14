@@ -10,6 +10,8 @@
   name   国内名称与 glottolog_cn.csv 的 names_cjk 或 name 列直接一致
          （仅做繁体转简体的字形归一；需要 opencc-python-reimplemented，缺失时只做原样比对）
   label  条目的 legal_code_from_label 等于本类代码
+  alias  经 data/aliases/legal_language_alias.csv 补上的对应（T21；别名表每行有来源，
+         note 以“【不采用”开头的行表示同名异指等，按名称对到的该条目反而要剔除）
   none   未能对应
 不按拼写相近、地理相邻或谱系相近对齐。
 """
@@ -45,6 +47,26 @@ rd = lambda p: list(csv.DictReader(open(ROOT / p, encoding="utf-8")))
 glot = rd("data/glottolog_cn.csv")
 G = {g["glottocode"]: g for g in glot}
 legal = rd("data/legal_categories.csv")
+
+# T21 别名表：按 row_id 生效；“【不采用”行从该行的名称对齐结果中剔除对应条目
+ALIAS, DROP = {}, {}
+for a in rd("data/aliases/legal_language_alias.csv"):
+    (DROP if a["note"].startswith("【不采用") else ALIAS).setdefault(a["row_id"], []).append(a)
+
+
+def apply_alias(row_id, hits):
+    """返回 (新增条目, 别名说明, 剔除说明)。不在中国条目表里的条目不加入映射。"""
+    drop = [a for a in DROP.get(row_id, []) if a["glottocode"] in hits]
+    for a in drop:
+        hits.remove(a["glottocode"])
+    add, tags = [], []
+    for a in ALIAS.get(row_id, []):
+        gc = a["glottocode"]
+        if gc in G and gc not in hits and gc not in add:
+            add.append(gc)
+            tags.append(f"{a['domestic_name']}={gc}（{G[gc]['name']}，{a['alias_basis']}）")
+    hits.extend(add)
+    return add, tags, [a["glottocode"] for a in drop]
 
 # 名称索引：names_cjk 各项（原样与繁转简）＋ name 列
 idx = {}
@@ -106,6 +128,7 @@ for L in legal:
                     elif lab:
                         tag += f"，标注为{lab}"
                     how.append(tag + "）")
+        added, atags, dropped = apply_alias(f"X-{c}-{seq:02d}", hits)
         used.update(hits)
         n_lang = sum(lang_level(g) for g in hits)
         if not r["names"]:
@@ -114,11 +137,20 @@ for L in legal:
             cons, basis = "未对应（表内无同名条目）", "none"
         elif n_lang == 1 and len(hits) == 1:
             cons, basis = "一致（按名称对到1条）", "name"
+            if added:
+                cons, basis = "一致（按别名对到1条）", "alias"
         elif n_lang == 0:
             kinds = {"簿记等伪语系条目" if G[g]["family"] in PSEUDO else G[g]["level"] + "级节点" for g in hits}
             cons, basis = "按名称只对到" + "、".join(sorted(kinds)) + "（不计入语言级条目）", "name"
         else:
             cons, basis = f"国内合并而Glottolog分列（按名称对到{len(hits)}条）", "name"
+        if added and len(hits) > 1:
+            how_n = len(hits) - len(added)
+            cons = (f"国内合并而Glottolog分列（按名称{how_n}条、按别名{len(added)}条）" if how_n
+                    else f"国内合并而Glottolog分列（按别名对到{len(hits)}条）")
+            basis = "alias"
+        if added and any("（部分）" in x["note"] for x in ALIAS.get(f"X-{c}-{seq:02d}", [])):
+            cons = f"部分对应（按别名对到{len(hits)}条；来源注“部分”，其余方言未对应）"
         note = r["note"]
         if c == "01" and seq == 1:
             n_sin = sum(1 for g in glot if "Sinitic" in g["classification_path"] and g["level"] == "language")
@@ -127,10 +159,14 @@ for L in legal:
             n_tw = sum(1 for g in glot if "TW" in g["countries"].split(";") and g["family"] == "Austronesian"
                        and g["level"] == "language")
             note += f"。表中 countries 含 TW 的南岛语语言级条目共 {n_tw} 条（来源编码为 CN;TW，仅计数）"
+        how = [h for h in how if h.split("=")[1].split("（")[0] not in dropped]
         if how:
             note += ("。" if note else "") + "名称对齐：" + "；".join(how)
-        if "taji1245" in hits:  # T18 抽检裁决⑩：同名异指，不作合并/分列证据
-            note = "同名异指：taji1245 是波斯语塔吉克语，国内塔吉克语指色勒库尔、瓦罕，不作为‘国内合并而 Glottolog 分列’的证据"
+        if atags:
+            note += ("。" if note else "") + "别名对齐（见 data/aliases）：" + "；".join(atags)
+        if dropped:  # T11 裁决⑩：同名异指，不作合并/分列证据
+            note += ("。" if note else "") + "按名称曾对到、经别名表剔除（同名异指，不作合并/分列证据）：" + "；".join(
+                f"{g}（{G[g]['name']}）" for g in dropped)
         urls = ([neac_url(c)] if r["neac"] else []) + ([nmlr_url(c)] if r["nmlr"] else [])
         out.append(dict(row_id=f"X-{c}-{seq:02d}", legal_code=c, variety_label=r["label"],
                         glottocodes=";".join(hits), consistency=cons, intelligibility_note=r["intel"],
@@ -152,10 +188,13 @@ for L in legal:
 
 # 跨类共用行（来源明述）
 out.append(dict(row_id="XS-02", legal_code="04;40", variety_label="普米语（普米族与四川木里、盐源部分地区的藏族共用）",
-                glottocodes="", consistency="国家民委普米族概况页明述藏族使用普米语；nmlr藏族页亦列普米语",
+                glottocodes=";".join(apply_alias("XS-02", xs2 := [])[0]),
+                consistency="国家民委普米族概况页明述藏族使用普米语；nmlr藏族页亦列普米语",
                 intelligibility_note="来源明述", evidence_grade="B",
-                domestic_source_url=neac_url("40") + ";" + nmlr_url("04"), align_basis="none",
-                note="neac普米族页：“还有一种是藏族使用普米语，主要是四川木里、盐源县的部分地区”。表内无名为“普米语”的条目，未对应"))
+                domestic_source_url=neac_url("40") + ";" + nmlr_url("04"), align_basis="alias" if xs2 else "none",
+                note="neac普米族页：“还有一种是藏族使用普米语，主要是四川木里、盐源县的部分地区”。"
+                     + ("表内无名为“普米语”的条目，别名对齐（见 data/aliases）：" + "、".join(xs2) if xs2
+                        else "表内无名为“普米语”的条目，未对应")))
 out.append(dict(row_id="XS-03", legal_code="42;51", variety_label="独龙语／贡山怒语（怒族与独龙族共用近同变体）",
                 glottocodes=";".join(sorted(idx.get("独龙语", {}))),
                 consistency="国家民委怒族概况页明述“基本可以通话”；nmlr怒族页把独龙语列为怒族使用的语言",

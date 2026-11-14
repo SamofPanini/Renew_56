@@ -15,8 +15,9 @@
 | `data/glottolog_cn.csv` | Glottolog 中国家字段含 CN 的全部条目：分类路径、坐标、濒危等级、民族标注、汉字名称 | glottolog-cldf，由脚本生成 |
 | `data/mapping_label_derived.csv` | 法定类别 × Glottolog 条目，依据是 Glottolog 濒危注释中所引 Ethnologue 的“recognized nationality”标注 | 由脚本生成 |
 | `data/mapping_legal_language.csv` | 人工映射，56 个法定类别 × 语言变体：试点 11 类（T13）加 T18 的 45 类。含国内口径与 Glottolog 口径是否一致、对齐依据、国内页面地址 | 试点行来自 Notion 的 X- 行；T18 行由 `scripts/build_t18_rows.py` 生成 |
-| `data/partitions/han_partitions.csv` | 汉语方言人群在不同制度与学术口径下的分类表（14 行；`n_listed` 解析不出的留空） | Notion 论断库 HX- 行（T14，复检通过），T19 导出 |
-| `data/events/gaitu_guiliu.csv`、`data/events/context_series.csv` | 改土归流事件表（20 行）与背景序列（5 行）；`trigger` 只记来源明说的触发因素 | Notion 论断库 G- 行（T16，抽检通过），T19 导出 |
+| `data/aliases/legal_language_alias.csv` | 国内语言名—Glottolog 别名对照表（T21）：`row_id`、`domestic_name`、`glottocode`、`alias_basis`、`source_url`、`evidence_grade`、`note`。只覆盖 T18 中 `align_basis=none` 的行与 X-41-01 | 维基中文页（2026-11-14 抓取，原句摘在 `note`）与 `glottolog_cn.csv` 的 `names_cjk` |
+| `data/partitions/han_partitions.csv` | 汉语方言人群在不同制度与学术口径下的分类表（14 行；`n_listed` 解析不出的留空；`status` 为 Notion“状态”原值） | Notion 论断库 HX- 行（T14，复检通过），T19 导出 |
+| `data/events/gaitu_guiliu.csv`、`data/events/context_series.csv` | 改土归流事件表（20 行）与背景序列（5 行）；`trigger` 只记来源明说的触发因素；`status` 为 Notion“状态”原值（2026-11-14 读取，T21 补列；“待核”行下游使用时须回查） | Notion 论断库 G- 行（T16，抽检通过），T19 导出 |
 | `scripts/build_glottolog_cn.py` | 生成上面两张脚本表 | |
 | `scripts/t18_domestic_spec.py` | T18 国内口径规格表：45 类逐行的名称、两类官方页面的原文片段、互通性说法 | 人工摘录，读取日期 2026-11-14 |
 | `scripts/build_t18_rows.py` | 按规格表与中国条目表生成 45 类的映射行 | |
@@ -53,13 +54,25 @@ python3 scripts/build_indicators.py
 `mapping_legal_language.csv` 的列：`row_id`（X-代码-序号；跨类共用行为 XS-序号）、`legal_code`、`variety_label`、`glottocodes`、`consistency`、`intelligibility_note`、`evidence_grade`，以及 T18 新增的 `domestic_source_url`、`align_basis`、`note`（试点行这三列留空）。
 
 - **国内口径**每类读两页：国家民委该族“概况”页（neac.gov.cn）与国家语言资源监测与研究民族语言中心该族页面（nmlr.muc.edu.cn）。两页说法不一致时并存，不调和。汉族没有 nmlr 页；柯尔克孜族、达斡尔族的 neac 概况页正文没有写语言。
-- **对齐依据**只有三种：`name`（国内名称与条目表的 `names_cjk` 或 `name` 直接一致，只做繁体转简体的字形归一）、`label`（条目的 `legal_code_from_label` 等于本类代码）、`none`（未对应）。不按拼写相近、地理相邻或谱系相近对齐。
-- **按名称对齐是字面对齐，不是语言学判定**。例如“塔吉克语”按名称对到 Glottolog 的 Tajik（taji1245），而国内页面说的两种方言是色勒库尔语与瓦罕语；“蒙古语”“苗语”“白语”“侗语”等在表内没有同名条目，因此标为未对应，并不表示 Glottolog 没有相应条目。未对应的多少首先反映两套名称体系的差别。
+- **对齐依据**有四种：`name`（国内名称与条目表的 `names_cjk` 或 `name` 直接一致，只做繁体转简体的字形归一）、`label`（条目的 `legal_code_from_label` 等于本类代码）、`alias`（T21 别名表补上的对应，见下节）、`none`（未对应）。不按拼写相近、地理相邻或谱系相近对齐。
+- **按名称对齐是字面对齐，不是语言学判定**。例如“塔吉克语”按名称曾对到 Glottolog 的 Tajik（taji1245），而国内页面说的两种方言是色勒库尔语与瓦罕语（同名异指，T21 起由别名表剔除）；“蒙古语”“苗语”“白语”“侗语”等在表内没有同名条目，T18 标为未对应，T21 用别名表补上了其中有来源的部分。未对应的多少首先反映两套名称体系的差别。
 - **“汉语”不对齐**。回族、满族、锡伯族、瑶族、裕固族等行里的“汉语”在表内没有同名条目，标为未对应；汉族一行只记表内汉语支语言级条目数（29），不逐条对齐。
 - **证据等级**：页面已打开并读到原句的行记 B（原文片段写在规格表里，可用 `build_t18_rows.py --pages` 对已下载的页面核对）；仅据标注的行记 D。
 - **高山族**只记国内页面的表述与表内 `countries` 含 TW 的南岛语语言级条目数（22），不逐条对齐。
 
-## 56 类指标（人工映射 ∪ 标注，T18）
+## 别名对照表（T21）
+
+`data/aliases/legal_language_alias.csv` 一行 = 某个映射行（`row_id`）里的一个国内名称对到一个 Glottolog 条目。`build_t18_rows.py` 读这张表，把对应补进该行，`align_basis` 改为 `alias`。
+
+- `alias_basis` 三种：`glottolog_cjk`（`glottolog_cn.csv` 的 `names_cjk` 含该国内名称，或仅差“语／话”后缀、仅多方位词，不抓取）；`iso_name`（Glottolog 或 ISO 639-3 页写出与国内名称对应的地名、方言名；本轮未用）；`source_states`（来源有一句话同时写出国内名称与该条目，原句已读，摘在 `note`）。
+- 本轮 `source_states` 全部来自维基中文页，且都是**经 ISO 639-3 代码搭桥**：页面写“国内名称—代码”（如“doc – 北侗语”），代码在 `glottolog_cn.csv` 中唯一对应一个条目。证据等级一律 D。
+- `note` 以“【不采用”开头的行表示同名异指或所指不同：不加入映射；若该条目原本按名称对到，则从该行剔除（taji1245 即此例）。
+- 仍未对应的：`汉语` 各行（按既定规则不对齐）；阿拉伯语／波斯语（表内无条目）；巴那语（来源给出 Glottolog pana1310，但不在 `glottolog_cn.csv`）；蒙古语的卫拉特、巴尔虎布利亚特方言（来源只写 mvf“部分”）；“怒语”合称；按设计不对齐的四行（X-03-05、X-06-03、X-22-01、X-23-01）。
+- 限制：维基是后出转述，代码与名称的对应可能有误；Ethnologue／ISO 的语言切分本身与国内“方言”口径不同（如苗语三大方言对到 26 个条目），“国内合并而 Glottolog 分列”的条目数主要反映 ISO 的切分粒度。
+
+## 56 类指标（人工映射 ∪ 标注，T18；T21 更新）
+
+T21 别名表加入后（括号内为 T18 值）：已对齐语言级条目 2 个以上 28 类（23）；已对齐条目为 0 的 3 类：高山、土、基诺（7 类）；跨 2 个以上语系 7 类（5），新增蒙古族（卡卓语属汉藏语）、瑶族（拉珈语、布央语属侗台语，均有国内页面依据）；共用条目的类别对 3 对（不含语言转用）：怒族—独龙族、藏族—普米族（普米语，XS-02）、苗族—瑶族（金门方言 kimm1245：来源称海南说金门方言的人被识别为苗族）；语言转用另列 2 对（塔塔尔族用维吾尔语、哈萨克语），按 T11 裁决⑩不计为共用，见 `shift_shared_with` 列。新增列 `aligned_by_alias`；`name_aligned_*` 两列自 T21 起含别名对齐（即“有国内依据的对齐”）。下面是 T18 时的原记录。
 
 `outputs/indicators.csv` 在原有 10 列之后新增：`domestic_varieties`（有国内依据的行数）、`domestic_unaligned`、`aligned_languages`（已对齐的表内语言级条目数，不计伪语系）、`aligned_by_name`、`aligned_by_label_only`、`aligned_families` 与名称、`name_aligned_families` 与名称（只看按名称或试点人工对齐的条目）、`shared_with`、`codes_not_in_table`。
 
