@@ -26,7 +26,7 @@ legal_code,name_zh,label_entries,label_languages,label_families,label_family_nam
 25,水族,1,1,1,Tai-Kadai,1,0,1,,1,0,1,1,0,1,Tai-Kadai,1,Tai-Kadai,,,0,
 26,东乡族,0,0,0,,0,0,1,dong1285,1,0,1,1,0,1,Mongolic-Khitan,1,Mongolic-Khitan,,,0,
 27,纳西族,1,1,1,Sino-Tibetan,1,0,1,,1,0,1,1,0,1,Sino-Tibetan,1,Sino-Tibetan,,,0,
-28,景颇族,1,1,1,Sino-Tibetan,1,0,5,kach1280；lash1243；maru1249；pela1242,5,1,5,2,1,1,Sino-Tibetan,1,Sino-Tibetan,,,2,
+28,景颇族,1,1,1,Sino-Tibetan,1,0,5,kach1280；lash1243；maru1249；pela1242,5,0,5,2,0,1,Sino-Tibetan,1,Sino-Tibetan,,,3,
 29,柯尔克孜族,0,0,0,,0,0,1,kirg1245,1,0,1,1,0,1,Turkic,1,Turkic,,,0,
 30,土族,0,0,0,,0,0,1,tuuu1240,1,0,0,0,0,0,,0,,,,0,
 31,达斡尔族,0,0,0,,0,0,1,daur1238,1,0,1,1,0,1,Mongolic-Khitan,1,Mongolic-Khitan,,,0,
