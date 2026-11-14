@@ -1,6 +1,6 @@
 # data/raw 来源记录（T20）
 
-## 状态：数据闸门未通过（2026-11-14），等待用户提供原表
+## 状态：数据闸门未通过（2026-11-14，第二个会话复试仍未通过），等待用户
 
 ### 需要的文件（未取得）
 
@@ -20,3 +20,15 @@
 4. WebFetch → 同一地址：同上。
 
 另：放行后改用 curl（经代理）的请求被会话权限拦下，未发出，不计次。
+
+### 第二个会话（续接，闸门重新计数，上限 6 次，已用 2 次）
+
+会话开工时实际运行在 Default 环境（放行列表为空），不是 Renew_56。
+
+1. WebFetch → https://www.stats.gov.cn/sj/pcsj/rkpc/7rp/indexch.htm ：getaddrinfo ENOTFOUND（环境拦截，非链接失效）。
+   → 随后用 switch_environment 把会话网络切到 Renew_56（放行 www.stats.gov.cn、www.neac.gov.cn、nmlr.muc.edu.cn）。
+2. WebFetch → 同一地址：仍 ENOTFOUND。切换只改经代理的请求；WebFetch 在本机解析域名，沿用容器启动时（Default）的规则，需在 Renew_56 环境中新建容器才生效。
+
+剩余 4 次未用：同一路径必然同样失败，再试只是消耗额度。查看代理状态的 curl 被会话权限拦下，未发出，不计次。
+省会坐标、方言归属来源未尝试（同一原因，任何未放行域名都无法解析）。
+
