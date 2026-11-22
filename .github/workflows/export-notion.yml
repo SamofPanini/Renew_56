@@ -1,0 +1,79 @@
+name: Export Notion (C0)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 每日一次，UTC 19:17（北京时间次日 03:17）
+    - cron: "17 19 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: export-notion
+  cancel-in-progress: false
+
+env:
+  EXPORT_BRANCH: data/notion-export
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Offline tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Export Notion data sources
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python scripts/export_notion.py
+
+      - name: Detect changes (manifest.json alone does not count)
+        id: diff
+        run: |
+          changes=$(git status --porcelain -- data/notion ':(exclude)data/notion/manifest.json')
+          if [ -n "$changes" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "$changes"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "data/notion 无变化，不提交。"
+          fi
+
+      - name: Commit to export branch
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$EXPORT_BRANCH"
+          git add data/notion
+          git commit -m "C0: Notion 导出 $(date -u +%Y-%m-%dT%H:%MZ)"
+          # 导出分支只由本工作流维护，每次从 main 重建
+          git push --force origin "$EXPORT_BRANCH"
+
+      - name: Open or update PR
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body="由 export-notion 工作流自动生成（run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}）。行数与属性见 data/notion/manifest.json。请人工检查后合并。"
+          pr=$(gh pr list --head "$EXPORT_BRANCH" --base main --state open --json number --jq '.[0].number')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --body "$body"
+          else
+            gh pr create --head "$EXPORT_BRANCH" --base main \
+              --title "C0: Notion 数据导出" --body "$body"
+          fi

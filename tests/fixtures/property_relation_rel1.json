@@ -1,0 +1,222 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000001"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000002"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000003"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000004"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000005"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000006"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000007"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000008"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000009"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000010"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000011"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000012"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000013"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000014"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000015"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000016"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000017"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000018"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000019"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000020"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000021"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000022"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000023"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000024"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000025"
+      }
+    },
+    {
+      "object": "property_item",
+      "id": "rel1",
+      "type": "relation",
+      "relation": {
+        "id": "aaaaaaaa-0000-0000-0000-000000000026"
+      }
+    }
+  ],
+  "next_cursor": null,
+  "has_more": false,
+  "type": "property_item",
+  "property_item": {
+    "id": "rel1",
+    "type": "relation",
+    "relation": {},
+    "next_url": null
+  }
+}
