@@ -26,8 +26,12 @@ SEED = 20201101  # 计划要求固定种子；留一划分本身是确定的，�
 np.random.seed(SEED)
 
 
-def load():
-    mig = pd.read_csv(ROOT / "data/raw/census2020_migration_5yr.csv", encoding="utf-8")
+MIG_2020 = ROOT / "data/raw/census2020_migration_5yr.csv"
+
+
+def load(mig_path=MIG_2020):
+    """mig_path：行=现住地、列=五年前常住地的省对省表（T22 用同一函数读 2010 年表）。"""
+    mig = pd.read_csv(mig_path, encoding="utf-8")
     provs = list(mig["现住地"])
     assert len(provs) == 31
     coords = pd.read_csv(ROOT / "data/raw/capital_coords.csv").set_index("province")
@@ -135,8 +139,8 @@ def run(df, label, models, base_dev=None):
     return out
 
 
-def main():
-    df = load()
+def run_all(df):
+    """全样本 M0–M5 与两项稳健性；T22 原样复用。"""
     res = run(df, "全样本", MODELS)
     # 稳健性 1：去掉 mixed=是 的省份（作迁出或迁入均去掉），重估 M3、M5
     keep = load_unmixed(df)
@@ -144,7 +148,11 @@ def main():
     # 稳健性 2：去掉北京、上海、广东作为迁入地的省对，重估 M5
     sub = df[~df["dest"].isin(["北京", "上海", "广东"])].copy()
     res += run(sub, "去掉迁入地京沪粤", [m for m in MODELS if m[0] in ("M0", "M5")])
-    out = pd.DataFrame(res)
+    return pd.DataFrame(res)
+
+
+def main():
+    out = run_all(load())
     (ROOT / "outputs").mkdir(exist_ok=True)
     out.to_csv(ROOT / "outputs/t20_results.csv", index=False, float_format="%.6g", encoding="utf-8")
     pd.set_option("display.width", 250)
